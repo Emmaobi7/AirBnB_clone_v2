@@ -1,52 +1,53 @@
 #!/usr/bin/env bash
-# script that sets up your web servers for the deployment of web_static
+# sets up server for deployment of static files
 
-# Install Nginx if it not already installed
+#install nginx
 sudo apt update
 sudo apt install -y nginx
 
-# Create the folders /data/web_static/releases/test/ if they don’t already exist
-sudo mkdir -p /data/web_static/releases/test/
+#folders and test folder
+folder="/data/web_static/"
+mkdir -p "$folder"
+mkdir -p "$folder/releases/test/"
+mkdir -p "$folder/shared"
 
-# Create the folder /data/web_static/shared/ if it doesn’t already exist
-sudo mkdir -p /data/web_static/shared/
+echo "my test config" > "$folder/releases/test/index.html"
 
-# Create a fake HTML file /data/web_static/releases/test/index.html
-echo "Hello World!" | sudo tee /data/web_static/releases/test/index.html
+symlink="$folder/current"
+if [ -L "$symlink" ]; then
+	rm "$symlink"
+fi
 
-# Create a symbolic link /data/web_static/current
-# linked to the /data/web_static/releases/test/ folder. 
-sudo ln -sf /data/web_static/releases/test/ /data/web_static/current
+ln -s "$folder/releases/test/" "$symlink"
 
-# Give ownership of the /data/ folder to the ubuntu user AND group
+
 sudo chown -R ubuntu:ubuntu /data/
 
-# Update the Nginx configuration to serve the content of
-# /data/web_static/current/ to hbnb_static
-echo "server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    root   /var/www/html;
-    index  index.html index.htm index.nginx-debian.html;
+server_config="
+server {
+        listen 80;
+        listen [::]:80 default_server;
 
-    server_name _;
+        add_header X-Served-By $HOSTNAME;
 
-    add_header X-Served-By $HOSTNAME;
+        root /var/www/html;
+        index index.nginx-debian.html;
 
-    location /redirect_me {
-        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
-    }
+	location /hbnb_static {
+		alias /data/web_static/current/;
+	}
 
-    error_page 404 /404.html;
-    location /404 {
-	root /etc/nginx/html;
-	internal;      
-    }
+        location /redirect_me {
+                return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
+        }
 
-    location /hbnb_static {
-        alias /data/web_static/current/;
-    }
-}" | sudo tee /etc/nginx/sites-available/default
+        error_page 404 /c404.html;
+        location =/c404.html {
+                root /usr/share/nginx/html;
+                internal;
+        }
+}"
 
-# restart the Nginx server
+echo "$server_config" | sudo tee /etc/nginx/sites-available/default
+
 sudo service nginx restart

@@ -1,18 +1,29 @@
 #!/usr/bin/python3
-"""keep clean module
-"""
-from fabric.api import run, local, env, cd, lcd
+"""deletes out-of-date archives"""
 
-env.hosts = ['54.236.49.90', '54.175.254.64']
+from fabric.api import env, run, local
+from datetime import datetime
+from os.path import exists
+
+env.hosts = ['100.26.10.68', '34.232.52.36']
 env.user = 'ubuntu'
 
-
 def do_clean(number=0):
-    """deletes out-of-date archives"""
-    num = 1 if not int(number) else int(number)
-    num += 1
+    """deletes out of date archive
+    """
+    number = int(number)
+    if number < 1:
+        number = 1
 
-    with lcd('versions'):
-        local(f'ls -t | tail -n +{num} | xargs rm -rf')
-    with cd('/data/web_static/releases'):
-        run(f'ls -t | tail -n +{num} | xargs rm -rf')
+    try:
+        archives = local("ls -lt versions", capture=True).split("\n")
+        archives = ["versions/" + archive for archive in archives]
+
+        for archive in archives[number:]:
+            local("rm -rf {}".format(archive))
+
+        releases = run("ls -lt /data/web_static/releases").split("\n")
+        for release in releases[number:]:
+            run("rm -rf /data/web_static/releases/{}".format(release))
+    except:
+        pass
