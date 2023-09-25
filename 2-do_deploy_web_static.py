@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""upload to web sever"""
+"""functions to upload to web sever"""
 
 from fabric.api import *
 import os
