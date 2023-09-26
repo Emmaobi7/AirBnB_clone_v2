@@ -14,10 +14,6 @@ def cities_of_state(id=None):
     """
     states = storage.all('State').values()
     
-    if states.id == id:
-
-
-
     return render_template('9-states.html', states=states)
 
 

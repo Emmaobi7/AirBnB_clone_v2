@@ -4,10 +4,6 @@
 		<TITLE>HBNB</TITLE>
 	</HEAD>
 	<BODY>
-		<H1>States</H1>
-		<UL>
-			{% for state in states.values()|sort(attribute='name') %}
-			    <LI>{{ state.id }}: <B>{{ state.name }}</B</LI>
 			{% if states.id == {{ id }} %}
 			    <H1>State</H1>
 			    <H3>Cities</H3>
@@ -17,6 +13,13 @@
 			            {% endfor %}
 			    </ul>
 			{% endfor %}
+			{% elif !{{ id }} %}
+			    <H1>States</H1>
+			    <UL>
+			    {% for state in states|sort(attribute='name') %}
+			        <LI>{{ state.id }}: {{ state.name }}</LI>	
+			    {% endfor %}
+			    </UL>
 		</UL>
 	</BODY>
 </HTML>
