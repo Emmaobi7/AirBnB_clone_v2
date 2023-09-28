@@ -18,7 +18,6 @@ def states():
     return render_template('7-states_list.html', states=states)
 
 
-
 @app.teardown_appcontext
 def clean_up_db(exception):
     """
@@ -26,6 +25,7 @@ def clean_up_db(exception):
     uses app.teardown_context
     """
     storage.close()
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

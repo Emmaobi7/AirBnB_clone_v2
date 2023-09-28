@@ -12,9 +12,10 @@ app = Flask(__name__)
 def cities_of_state(id=None):
     """list cities of a state
     """
-    states = storage.all('State').values()
-    
-    return render_template('9-states.html', states=states)
+    states = storage.all('State')
+    if id:
+        id = 'State.' + id
+    return render_template('9-states.html', states=states, id=id)
 
 
 @app.teardown_appcontext
@@ -22,5 +23,7 @@ def clean_up(exception):
     """remove alchemy session
     """
     storage.close()
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

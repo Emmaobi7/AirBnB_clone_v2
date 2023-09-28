@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 @app.route('/cities_by_states', strict_slashes=False)
 def cities():
-    """load of cities of 
+    """load of cities of
         a state
     """
     states = storage.all('State')

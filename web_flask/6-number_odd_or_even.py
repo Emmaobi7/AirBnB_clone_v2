@@ -77,8 +77,6 @@ def odd_even(n=None):
         var = 'even'
     else:
         var = 'odd'
-        
-
     return render_template('6-number_odd_or_even.html', n=n)
 
 
